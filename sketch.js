@@ -8,10 +8,15 @@ var canvas;
 var palyer, playerBase;
 var computer, computerBase;
 
-//Declare an array for arrows playerArrows = [ ]
+//Declara una matriz para las flechas playerArrows = [ ]
 var playerArrows = [];
-
+var computerArrows = []
 var arrow;
+var playerArcherLife = 3;
+var computerArcherLife = 3;
+function preload(){
+  backgroundImg = loadImage("assets/background.gif")
+}
 
 
 function setup() {
@@ -47,61 +52,74 @@ function setup() {
     120,
     120
   );
-  
- 
+  //función para administrar las flechas de la computadora
+  handleComputerArcher(); 
 
 
 }
 
 function draw() {
-  background(180);
+  background(backgroundImg,windowWidth/2,windowHeight/2,windowWidth,windowHeight);
+  
+  //escribe una línea correcta de código para mostrar la imagen de fondo
+  
 
   Engine.update(engine);
 
-  // Title
+  //Título
   fill("#FFFF");
   textAlign("center");
   textSize(40);
-  text("EPIC ARCHERY", width / 2, 100);
+  text("TIRO CON ARCO ÉPICO", width / 2, 100);
 
  
   playerBase.display();
+  player.life();
   player.display();
   
 
   computerBase.display();
   computer.display();
-  
+  computer.life();
+
   playerArcher.display();
   computerArcher.display()
 
- // Uncomment and use correct for loop to display arrow using showArrow() function
- for (var i=0; i<playerArrows.length; i++) 
- {
- showArrows(i, playerArrows);
- }
+ //Usar un loop for para mostrar la flecha usando la función showArrow() 
+ for (var i = 0; i < playerArrows.length; i++) {
+  showArrows(i, playerArrows);
+}
 
+for (var i = 0; i < computerArrows.length; i++) {
+  showArrows(i, computerArrows);
 }
 
 
+handlePlayerArrowCollision()
+handleComputerArrowCollision()
+}
 
 function keyPressed() {
+
   if(keyCode === 32){
-    // create an arrow object and add into an array ; set its angle same as angle of playerArcher
+    //crea un objeto de flecha y agregala en una matriz ; establece su ángulo igul que el de playerArcher
     var posX = playerArcher.body.position.x;
     var posY = playerArcher.body.position.y;
     var angle = playerArcher.body.angle+PI/2;
+
     var arrow = new PlayerArrow(posX, posY, 100, 10);
+
     arrow.trajectory = [];
     Matter.Body.setAngle(arrow.body, angle);
     playerArrows.push(arrow);
+
   }
 }
 
 function keyReleased () {
 
   if(keyCode === 32){
-    //call shoot() function for each arrow in an array playerArrows
+    //llamar a la función shoot() por cada flecha en una matriz playerArrows
     if (playerArrows.length) {
       var angle = playerArcher.body.angle+PI/2;
       playerArrows[playerArrows.length - 1].shoot(angle);
@@ -109,7 +127,7 @@ function keyReleased () {
   }
 
 }
-//Display arrow and Tranjectory
+//Mostrar la flecha y la trayectoria
 function showArrows(index, arrows) {
   arrows[index].display();
   
@@ -118,3 +136,43 @@ function showArrows(index, arrows) {
  
 
 }
+
+function handleComputerArcher() {
+  if (!computerArcher.collapse && !playerArcher.collapse) {
+    setTimeout(() => {
+      var pos = computerArcher.body.position;
+      var angle = computerArcher.body.angle;
+      var moves = ["UP", "DOWN"];
+      var move = random(moves);
+      var angleValue;
+
+      if (move === "UP") {
+        angleValue = 0.1;
+      } else {
+        angleValue = -0.1;
+      }
+      angle += angleValue;
+
+      var arrow = new ComputerArrow(pos.x, pos.y, 100, 10, angle);
+
+      Matter.Body.setAngle(computerArcher.body, angle);
+      Matter.Body.setAngle(computerArcher.body, angle);
+
+      computerArrows.push(arrow);
+      setTimeout(() => {
+        computerArrows[computerArrows.length - 1].shoot(angle);
+      }, 100);
+
+      handleComputerArcher();
+    }, 2000);
+  }
+}
+
+function handlePlayerArrowCollision() {
+//Escribir código para detectar la colisión entre la flecha del jugador y el opontente
+}
+
+function handleComputerArrowCollision() {
+  //Escribir código para detectar colisión entre la flecha de la computadora y el oponente
+}
+
